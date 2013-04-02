@@ -3,7 +3,9 @@ package org.clh.jsfv.file;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -38,68 +40,27 @@ public class SfvChecker {
 
     public void process() throws IOException {
         FilenameFilter filter = new SfvFilenameFilter();
-        File[] sfvFiles = listFilesAsArray(file, filter , true);
+        FileLocator fileLocator = new FileLocator(filter);
+
+        List<File> sfvFiles = fileLocator.listFiles(file);
         for (File file : sfvFiles) {
-            dispatchEvent(new StringSfvCheckerEvent("Processing file :" + file.toString()));
-            SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(file.getParentFile());
-            sfvCheckDirectory.process();
-            if (sfvCheckDirectory.getNumberOfFailedFiles() > 0) {
-                dispatchEvent(new StringSfvCheckerEvent("ERROR in :" + file.toString()));
-            }
-
-            if (sfvCheckDirectory.getNumberOfMissingFiles() > 0) {
-                dispatchEvent(new StringSfvCheckerEvent("MISSING FILE in :" + file.toString()));
-            }
+            processFile(file);
         }
     }
-    
-    public static File[] listFilesAsArray(
-            File directory,
-            FilenameFilter filter,
-            boolean recurse)
-    {
-        Collection<File> files = listFiles(directory,
-                filter, recurse);
-    //Java4: Collection files = listFiles(directory, filter, recurse);
-        
-        File[] arr = new File[files.size()];
-        return files.toArray(arr);
-    }
 
-    public static Collection<File> listFiles(
-    // Java4: public static Collection listFiles(
-            File directory,
-            FilenameFilter filter,
-            boolean recurse)
-    {
-        // List of files / directories
-        Vector<File> files = new Vector<File>();
-    // Java4: Vector files = new Vector();
-        
-        // Get files / directories in the directory
-        File[] entries = directory.listFiles();
-        
-        // Go over entries
-        for (File entry : entries)
-        {
+    private void processFile(File file) throws IOException {
+        dispatchEvent(new StringSfvCheckerEvent("Processing file :" + file.toString()));
 
-            // If there is no filter or the filter accepts the 
-            // file / directory, add it to the list
-            if (filter == null || filter.accept(directory, entry.getName()))
-            {
-                files.add(entry);
-            }
-            
-            // If the file is a directory and the recurse flag
-            // is set, recurse into the directory
-            if (recurse && entry.isDirectory())
-            {
-                files.addAll(listFiles(entry, filter, recurse));
-            }
+        SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(file.getParentFile());
+        sfvCheckDirectory.process();
+
+        if (sfvCheckDirectory.getNumberOfFailedFiles() > 0) {
+            dispatchEvent(new StringSfvCheckerEvent("ERROR in :" + file.toString()));
         }
-        
-        // Return collection of files
-        return files;       
+
+        if (sfvCheckDirectory.getNumberOfMissingFiles() > 0) {
+            dispatchEvent(new StringSfvCheckerEvent("MISSING FILE in :" + file.toString()));
+        }
     }
 
     public void setEventHandler(SfvCheckerEventHandler eventHandler){
