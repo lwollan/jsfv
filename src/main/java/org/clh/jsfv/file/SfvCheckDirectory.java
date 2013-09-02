@@ -173,7 +173,8 @@ public class SfvCheckDirectory {
         CRC32 crc = new CRC32();
         int len = 0;
         int off = 0;
-        byte[] fileBuffer = new byte[512];
+        int bufferSize = fis.available() > 0 ? fis.available() : 512;
+        byte[] fileBuffer = new byte[bufferSize];
         while (len != -1) {
             len = fis.read(fileBuffer);
             if (len == -1) {

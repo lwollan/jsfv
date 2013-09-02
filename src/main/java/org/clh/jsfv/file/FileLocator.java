@@ -16,14 +16,16 @@ public class FileLocator {
     public List<File> listFiles(File directory) {
         List<File> files = new ArrayList<File>();
 
-        File[] entries = directory.listFiles(filter);
+        File[] entries = directory.listFiles();
 
         if (entries != null) {
             for (File entry : entries) {
-                files.add(entry);
-
                 if (entry.isDirectory()) {
                     files.addAll(listFiles(entry));
+                } else {
+                    if (filter.accept(entry.getParentFile(), entry.getName())) {
+                        files.add(entry);
+                    }
                 }
             }
         }
