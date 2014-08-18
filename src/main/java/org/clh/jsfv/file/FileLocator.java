@@ -20,11 +20,13 @@ public class FileLocator {
 
         if (entries != null) {
             for (File entry : entries) {
-                if (entry.isDirectory()) {
-                    files.addAll(listFiles(entry));
-                } else {
-                    if (filter.accept(entry.getParentFile(), entry.getName())) {
-                        files.add(entry);
+                if (!entry.isHidden()) {
+                    if (entry.isDirectory()) {
+                        files.addAll(listFiles(entry));
+                    } else {
+                        if (filter.accept(entry.getParentFile(), entry.getName())) {
+                            files.add(entry);
+                        }
                     }
                 }
             }

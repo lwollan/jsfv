@@ -1,30 +1,34 @@
 package org.clh.jsfv.file;
 
-import java.io.FilenameFilter;
-
-import junit.framework.Assert;
-
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 
-@Ignore
+import java.io.FilenameFilter;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class SfvFilenameFilterTest {
+
+    private FilenameFilter filter;
+
+    @Before
+    public void setup() {
+        filter = new SfvFilenameFilter();
+    }
 
     @Test
     public void testThatFilesWithSFVsuffixIsAccepted() {
-        FilenameFilter filter = new SfvFilenameFilter();
-        Assert.assertTrue(filter.accept(null, "acceptable.sfv"));
+        assertTrue(filter.accept(null, "acceptable.sfv"));
     }
 
     @Test
     public void testThatFilesWithMixedCasedSFVsuffixIsAccepted() {
-        FilenameFilter filter = new SfvFilenameFilter();
-        Assert.assertTrue(filter.accept(null, "acceptable.sFv"));
+        assertTrue(filter.accept(null, "acceptable.sFv"));
     }
 
     @Test
     public void testThatFilesWithoutSFVsuffixIsNotAccepted() {
-        FilenameFilter filter = new SfvFilenameFilter();
-        Assert.assertFalse(filter.accept(null, "notacceptale.doc"));
+        assertFalse(filter.accept(null, "notacceptale.doc"));
     }
 }
