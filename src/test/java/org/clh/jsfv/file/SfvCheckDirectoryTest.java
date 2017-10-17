@@ -30,7 +30,7 @@ public class SfvCheckDirectoryTest {
         File sfvFileMock = Mockito.mock(File.class);
         File dirMock = Mockito.mock(File.class);
         Mockito.when(dirMock.isFile()).thenReturn(Boolean.FALSE);
-        File[] sfvFileArrayWithMock = new File[] { sfvFileMock };
+        File[] sfvFileArrayWithMock = new File[]{sfvFileMock};
         Mockito.when(dirMock.listFiles(Mockito.any(FilenameFilter.class)))
                 .thenReturn(sfvFileArrayWithMock);
 
@@ -64,7 +64,7 @@ public class SfvCheckDirectoryTest {
         File sfvFileMock = Mockito.mock(File.class);
         File dirMock = Mockito.mock(File.class);
         Mockito.when(dirMock.isFile()).thenReturn(Boolean.FALSE);
-        File[] sfvFileArrayWithMock = new File[] { sfvFileMock };
+        File[] sfvFileArrayWithMock = new File[]{sfvFileMock};
         Mockito.when(dirMock.listFiles(Mockito.any(FilenameFilter.class)))
                 .thenReturn(sfvFileArrayWithMock);
 
@@ -90,12 +90,12 @@ public class SfvCheckDirectoryTest {
         sfvCheckDirectory.process(new SystemOutEventLogger());
         Assert.assertEquals(1, sfvCheckDirectory.getNumberOfFailedFiles());
     }
-    
+
     @Test
     public void testThatMissingFilesAreCreated() throws IOException {
         File directory = new File("src/main/resources/nofilesmissing");
         SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(directory);
         sfvCheckDirectory.process(new SystemOutEventLogger());
-        
+
     }
 }

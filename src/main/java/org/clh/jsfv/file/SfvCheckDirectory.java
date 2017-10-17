@@ -2,6 +2,7 @@ package org.clh.jsfv.file;
 
 import org.clh.jsfv.logging.EventLogger;
 import org.clh.jsfv.logging.StringEvent;
+import org.clh.jsfv.state.StateFile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,7 +50,7 @@ public class SfvCheckDirectory {
         }
     }
 
-    
+
     public void process(EventLogger evenHandler) throws IOException {
         readSfvFileIntoFileMap();
         procesesEntriesInFilemap();
@@ -67,17 +68,17 @@ public class SfvCheckDirectory {
 
     private void procesesEntriesInFilemap() throws FileNotFoundException,
             IOException {
-        DirectoryHeaderfile headerfile = new DirectoryHeaderfile(directory, map.size());
+        StateFile headerfile = new StateFile(directory, map.size());
 
         for (String file : map.keySet()) {
             processFile(headerfile, file);
         }
-        
+
         headerfile.setFinalStatus();
     }
 
 
-    private void readSfvFileIntoFileMap() throws FileNotFoundException, IOException {
+    private void readSfvFileIntoFileMap() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(sfvFile)));
         String line = null;
@@ -104,7 +105,7 @@ public class SfvCheckDirectory {
     }
 
 
-    private void processFile(DirectoryHeaderfile headerfile, String file) {
+    private void processFile(StateFile headerfile, String file) {
         try {
             if (new File(directory, file).exists()) {
                 InputStream fis = new FileInputStream(new File(directory, file));

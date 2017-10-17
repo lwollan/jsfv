@@ -43,7 +43,7 @@ public class FileLocatorTest {
         File subDirectory = createMockDir("subDirectory");
         File sfvFile = createMockFile("dummy.sfv");
 
-        when(baseDirectory.listFiles()).thenReturn(new File[] { subDirectory, sfvFile });
+        when(baseDirectory.listFiles()).thenReturn(new File[]{subDirectory, sfvFile});
 
         List<File> files = locator.listFiles(baseDirectory);
 
@@ -56,7 +56,7 @@ public class FileLocatorTest {
         File hiddenSubDirectory = createHiddenMockDir(".AppleDouble");
         File sfvFileInSubDirectory = createMockFile("dummy.sfv");
 
-        when(baseDirectory.listFiles()).thenReturn(new File[] { hiddenSubDirectory });
+        when(baseDirectory.listFiles()).thenReturn(new File[]{hiddenSubDirectory});
         when(hiddenSubDirectory.listFiles()).thenReturn(new File[]{sfvFileInSubDirectory});
 
         List<File> files = locator.listFiles(baseDirectory);

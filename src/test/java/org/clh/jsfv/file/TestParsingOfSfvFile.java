@@ -67,7 +67,7 @@ public class TestParsingOfSfvFile {
     }
 
     private void processResult(SfvChecksum sfv, long value, File sourceFile) {
-        if (value == sfv.getCrc32() ) {
+        if (value == sfv.getCrc32()) {
             // see if there is a missing or failed file
             System.out.println(sourceFile + " file ok.");
         } else {

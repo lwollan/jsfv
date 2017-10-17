@@ -43,10 +43,10 @@ public class SfvChecker {
         dispatchEvent(StringEvent.completed(sfvFile, processingTime));
     }
 
-    public void setEventHandler(EventLogger eventHandler){
+    public void setEventHandler(EventLogger eventHandler) {
         this.evenHandler = eventHandler;
     }
-    
+
     void dispatchEvent(Event event) {
         if (evenHandler != null) {
             evenHandler.log(event);
