@@ -2,7 +2,7 @@ package org.clh.jsfv.file;
 
 import org.clh.jsfv.logging.Event;
 import org.clh.jsfv.logging.EventLogger;
-import org.clh.jsfv.logging.StringEvent;
+import org.clh.jsfv.logging.LogMessage;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -33,14 +33,14 @@ public class SfvChecker {
     }
 
     private void processFile(File sfvFile) throws IOException {
-        dispatchEvent(StringEvent.newFile(sfvFile));
+        dispatchEvent(LogMessage.newFile(sfvFile));
         Long start = System.currentTimeMillis();
 
         SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(sfvFile.getParentFile());
         sfvCheckDirectory.process(evenHandler);
 
         Long processingTime = System.currentTimeMillis() - start;
-        dispatchEvent(StringEvent.completed(sfvFile, processingTime));
+        dispatchEvent(LogMessage.completed(sfvFile, processingTime));
     }
 
     public void setEventHandler(EventLogger eventHandler) {

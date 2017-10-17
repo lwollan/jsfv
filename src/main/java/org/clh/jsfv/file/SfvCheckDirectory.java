@@ -1,7 +1,7 @@
 package org.clh.jsfv.file;
 
 import org.clh.jsfv.logging.EventLogger;
-import org.clh.jsfv.logging.StringEvent;
+import org.clh.jsfv.logging.LogMessage;
 import org.clh.jsfv.state.StateFile;
 
 import java.io.BufferedReader;
@@ -56,11 +56,11 @@ public class SfvCheckDirectory {
         procesesEntriesInFilemap();
 
         if (getNumberOfFailedFiles() > 0) {
-            evenHandler.log(StringEvent.errorInFile(sfvFile));
+            evenHandler.log(LogMessage.errorInFile(sfvFile));
         }
 
         if (getNumberOfMissingFiles() > 0) {
-            evenHandler.log(StringEvent.missingFile(sfvFile));
+            evenHandler.log(LogMessage.missingFile(sfvFile));
         }
 
     }

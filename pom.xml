@@ -46,7 +46,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.clh.jsfv.CommandLine</mainClass>
+                            <mainClass>org.clh.jsfv.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
