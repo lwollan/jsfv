@@ -1,5 +1,6 @@
 package org.clh.jsfv.file;
 
+import org.clh.jsfv.crc32.Stream;
 import org.clh.jsfv.logging.EventLogger;
 import org.clh.jsfv.logging.LogMessage;
 import org.clh.jsfv.state.StateFile;
@@ -10,11 +11,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.CRC32;
 
 public class SfvCheckDirectory {
 
@@ -108,10 +107,12 @@ public class SfvCheckDirectory {
     private void processFile(StateFile headerfile, String file) {
         try {
             if (new File(directory, file).exists()) {
-                InputStream fis = new FileInputStream(new File(directory, file));
-                if (!isChecksumAsExpected(calculateCRC32(fis), map.get(file))) {
+
+                long calculateCRC32 = Stream.calculateCRC32(new File(directory, file));
+                long expectedCRC32 = map.get(file);
+
+                if (!isChecksumAsExpected(calculateCRC32, expectedCRC32)) {
                     renameToFailedFile(file);
-//                    createdFailedFile(file);
                     headerfile.incrementFailedCount();
                 } else {
                     headerfile.incrementCount();
@@ -119,7 +120,6 @@ public class SfvCheckDirectory {
                     removeFailedFile(file);
                 }
                 headerfile.update();
-                fis.close();
             } else {
                 headerfile.incrementMissingCount();
                 createMissingFile(file);
@@ -181,23 +181,5 @@ public class SfvCheckDirectory {
         return expectedChecksum.equals(calculatedChecksum);
     }
 
-    private long calculateCRC32(InputStream fis) throws IOException {
-        CRC32 crc = new CRC32();
-        int len = 0;
-        int off = 0;
-        int bufferSize = fis.available() > 0 ? fis.available() : 512;
-        byte[] fileBuffer = new byte[bufferSize];
-        while (len != -1) {
-            len = fis.read(fileBuffer);
-            if (len == -1) {
-                fis.close();
-                break;
-            } else {
-                crc.update(fileBuffer, off, len);
-            }
-        }
-        long calculatedChecksum = crc.getValue();
-        return calculatedChecksum;
-    }
 
 }
