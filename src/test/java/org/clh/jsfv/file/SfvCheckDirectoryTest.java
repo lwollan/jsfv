@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import org.clh.jsfv.logging.SystemOutEventLogger;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class SfvCheckDirectoryTest {
                 .thenReturn(sfvFileArrayWithMock);
 
         SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(dirMock);
-        sfvCheckDirectory.process();
+        sfvCheckDirectory.process(new SystemOutEventLogger());
         Assert.assertEquals(0, sfvCheckDirectory.getNumberOfMissingFiles());
     }
 
@@ -77,7 +78,7 @@ public class SfvCheckDirectoryTest {
             throws IOException {
         File directory = new File("src/test/resources/onefilemissing");
         SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(directory);
-        sfvCheckDirectory.process();
+        sfvCheckDirectory.process(new SystemOutEventLogger());
         Assert.assertEquals(1, sfvCheckDirectory.getNumberOfMissingFiles());
     }
 
@@ -86,7 +87,7 @@ public class SfvCheckDirectoryTest {
             throws IOException {
         File directory = new File("src/test/resources/onecorruptfile");
         SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(directory);
-        sfvCheckDirectory.process();
+        sfvCheckDirectory.process(new SystemOutEventLogger());
         Assert.assertEquals(1, sfvCheckDirectory.getNumberOfFailedFiles());
     }
     
@@ -94,7 +95,7 @@ public class SfvCheckDirectoryTest {
     public void testThatMissingFilesAreCreated() throws IOException {
         File directory = new File("src/main/resources/nofilesmissing");
         SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(directory);
-        sfvCheckDirectory.process();
+        sfvCheckDirectory.process(new SystemOutEventLogger());
         
     }
 }

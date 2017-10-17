@@ -1,5 +1,8 @@
 package org.clh.jsfv.file;
 
+import org.clh.jsfv.logging.EventLogger;
+import org.clh.jsfv.logging.StringEvent;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,9 +50,18 @@ public class SfvCheckDirectory {
     }
 
     
-    public void process() throws IOException {
+    public void process(EventLogger evenHandler) throws IOException {
         readSfvFileIntoFileMap();
         procesesEntriesInFilemap();
+
+        if (getNumberOfFailedFiles() > 0) {
+            evenHandler.log(StringEvent.errorInFile(sfvFile));
+        }
+
+        if (getNumberOfMissingFiles() > 0) {
+            evenHandler.log(StringEvent.missingFile(sfvFile));
+        }
+
     }
 
 
@@ -65,8 +77,7 @@ public class SfvCheckDirectory {
     }
 
 
-    private void readSfvFileIntoFileMap() throws FileNotFoundException,
-            IOException {
+    private void readSfvFileIntoFileMap() throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(sfvFile)));
         String line = null;
@@ -106,6 +117,7 @@ public class SfvCheckDirectory {
                     removeMissingFile(file);
                     removeFailedFile(file);
                 }
+                headerfile.update();
                 fis.close();
             } else {
                 headerfile.incrementMissingCount();
@@ -164,8 +176,7 @@ public class SfvCheckDirectory {
         return failedFileCount;
     }
 
-    private boolean isChecksumAsExpected(long calculatedChecksum,
-            Long expectedChecksum) {
+    private boolean isChecksumAsExpected(long calculatedChecksum, Long expectedChecksum) {
         return expectedChecksum.equals(calculatedChecksum);
     }
 

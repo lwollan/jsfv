@@ -1,93 +1,62 @@
 package org.clh.jsfv.file;
 
+import org.clh.jsfv.logging.Event;
+import org.clh.jsfv.logging.EventLogger;
+import org.clh.jsfv.logging.StringEvent;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
-
-import javax.swing.JFileChooser;
 
 public class SfvChecker {
 
-    final class StringSfvCheckerEvent implements SfvCheckerEvent {
-        
-        private String event;
-        public StringSfvCheckerEvent(String event) {
-            this.event = event;
-        }
-        @Override
-        public String toString() {
-            return event;
-        }
-    }
-
-    private File file;
-    private SfvCheckerEventHandler evenHandler;
+    private File directory;
+    private EventLogger evenHandler;
 
     public SfvChecker(String string) {
         this(new File(string));
     }
 
-    SfvChecker(File file) {
-        if (file.isFile()) {
+    SfvChecker(File directory) {
+        if (directory.isFile()) {
             throw new IllegalArgumentException();
         }
-        this.file = file;
+        this.directory = directory;
     }
 
     public void process() throws IOException {
-        FilenameFilter filter = new SfvFilenameFilter();
-        FileLocator fileLocator = new FileLocator(filter);
-
-        List<File> sfvFiles = fileLocator.listFiles(file);
+        List<File> sfvFiles = getFilesToProcess(directory);
         for (File file : sfvFiles) {
             processFile(file);
         }
     }
 
-    private void processFile(File file) throws IOException {
-        dispatchEvent(new StringSfvCheckerEvent("Processing file :" + file.toString()));
+    private void processFile(File sfvFile) throws IOException {
+        dispatchEvent(StringEvent.newFile(sfvFile));
+        Long start = System.currentTimeMillis();
 
-        SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(file.getParentFile());
-        sfvCheckDirectory.process();
+        SfvCheckDirectory sfvCheckDirectory = new SfvCheckDirectory(sfvFile.getParentFile());
+        sfvCheckDirectory.process(evenHandler);
 
-        if (sfvCheckDirectory.getNumberOfFailedFiles() > 0) {
-            dispatchEvent(new StringSfvCheckerEvent("ERROR in :" + file.toString()));
-        }
-
-        if (sfvCheckDirectory.getNumberOfMissingFiles() > 0) {
-            dispatchEvent(new StringSfvCheckerEvent("MISSING FILE in :" + file.toString()));
-        }
+        Long processingTime = System.currentTimeMillis() - start;
+        dispatchEvent(StringEvent.completed(sfvFile, processingTime));
     }
 
-    public void setEventHandler(SfvCheckerEventHandler eventHandler){
+    public void setEventHandler(EventLogger eventHandler){
         this.evenHandler = eventHandler;
     }
     
-    void dispatchEvent(SfvCheckerEvent event) {
+    void dispatchEvent(Event event) {
         if (evenHandler != null) {
-            evenHandler.handle(event);
+            evenHandler.log(event);
         }
     }
-    
-    public static void main(String args[]) throws Exception {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-        int openDialog = chooser.showOpenDialog(null);
-        if (openDialog == JFileChooser.APPROVE_OPTION) {
-            SfvChecker checker = new SfvChecker(chooser.getSelectedFile().getAbsolutePath());
-            checker.setEventHandler(new SfvCheckerEventHandler() {
-
-                @Override
-                public void handle(SfvCheckerEvent event) {
-                    System.out.println(event.toString());
-                }
-            });
-            checker.process();
-        }
+    private static List<File> getFilesToProcess(File directory) {
+        FilenameFilter filter = new SfvFilenameFilter();
+        FileLocator fileLocator = new FileLocator(filter);
+        return fileLocator.listFiles(directory);
     }
+
 }

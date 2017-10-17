@@ -6,13 +6,12 @@ import java.io.IOException;
 
 public class DirectoryHeaderfile {
 
+    public static final String SITE_NAME = "jsfv";
     private File directory;
 
-    private Integer checkedCount = 0;
-    private Integer totaltCount;
-
+    private int checkedCount = 0;
+    private int totaltCount;
     private int failedCount = 0;
-
     private int missingCount = 0;
 
     public DirectoryHeaderfile(File directory, Integer totalCount) {
@@ -28,12 +27,12 @@ public class DirectoryHeaderfile {
     // -[site]-_COMPLETE_100%_NN_OF_NN_FILES_[site]-
     public void update() throws IOException {
         File headerFile = getHeaderFile();
-        File newHeaderFile = new File(directory, createFilename());
-        headerFile.renameTo(newHeaderFile);
+        File newHeaderFile = new File(directory, StateFileNames.UNKNOWN(checkedCount, totaltCount));
+        boolean renaned = headerFile.renameTo(newHeaderFile);
     }
 
     private File getHeaderFile() throws IOException {
-        File headerFile = locateHeaderFile("jsfv");
+        File headerFile = locateHeaderFile(SITE_NAME);
         if (headerFile == null) {
             headerFile = new File("dummy");
             headerFile.createNewFile();
@@ -41,25 +40,23 @@ public class DirectoryHeaderfile {
         return headerFile;
     }
 
-    private String createFilename() {
-        return "-[jsfv]_UNKNOWN_"+ getCompletedPercent()+"%_" + (getOKCount()) + "_OF_" + totaltCount
-                + "_FILES_[jsfv]-";
-    }
-
-    private File locateHeaderFile(final String string) {
+    private File locateHeaderFile(final String siteName) throws IOException {
         FilenameFilter filter = new FilenameFilter() {
 
             @Override
             public boolean accept(File dir, String name) {
-                if (name.startsWith("-[" + string + "]")) {
+                if (name.startsWith("-[" + siteName + "]")) {
                     return true;
                 }
                 return false;
             }
         };
+
         File[] files = directory.listFiles(filter);
         if (files == null || files.length == 0) {
-            return null;
+            File dummy = new File(directory, "dummy");
+            dummy.createNewFile();
+            return dummy;
         } else {
             return files[0];
         }
@@ -74,31 +71,13 @@ public class DirectoryHeaderfile {
         File headerFile = getHeaderFile();
         File newHeaderFile = null;
         if (failedCount == 0 && missingCount == 0) {
-            newHeaderFile = new File(directory, createStateOkFilename());
+            newHeaderFile = new File(directory, StateFileNames.OK(checkedCount, totaltCount));
         } else {
-            newHeaderFile = new File(directory, createSateIncompleteFilename());
+            newHeaderFile = new File(directory, StateFileNames.INCOMPLETE(checkedCount, totaltCount));
         }
         headerFile.renameTo(newHeaderFile);
     }
 
-    private String createSateIncompleteFilename() {
-        return "-[jsfv]_INCOMPLETE_"+getCompletedPercent()+"%_" + (getOKCount()) + "_OF_" + totaltCount
-        + "_FILES_[jsfv]-";
-    }
-
-    private int getCompletedPercent() {
-        double a =  (getOKCount()/(double)totaltCount)*100;
-        return (int)a;
-    }
-
-    private int getOKCount() {
-        return checkedCount;
-    }
-
-    private String createStateOkFilename() {
-        return "-[jsfv]_OK_"+getCompletedPercent()+"%_" + (getOKCount()) + "_OF_" + totaltCount
-        + "_FILES_[jsfv]-";
-    }
 
     public void incrementMissingCount() {
         this.missingCount  ++;

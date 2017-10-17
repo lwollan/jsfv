@@ -4,7 +4,7 @@
 
     <groupId>org.clh</groupId>
     <artifactId>jsfv</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>jsfv</name>
@@ -42,16 +42,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.clh.jsfv.file.SfvChecker</mainClass>
-                            <packageName>org.clh.jsfv.file</packageName>
+                            <mainClass>org.clh.jsfv.CommandLine</mainClass>
                         </manifest>
-                        <manifestEntries>
-                            <mode>development</mode>
-                            <url>${pom.url}</url>
-                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
