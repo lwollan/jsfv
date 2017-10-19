@@ -1,36 +1,33 @@
 package org.clh.jsfv.crc32;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.zip.CRC32;
 
 public class Stream {
 
-    private static long calculateCRC32(InputStream fis) throws IOException {
+    private static long calculateCRC32(InputStream source) throws IOException {
         CRC32 crc = new CRC32();
-        int len = 0;
-        int off = 0;
-        int bufferSize = fis.available() > 0 ? fis.available() : 512;
-        byte[] fileBuffer = new byte[bufferSize];
-        while (len != -1) {
-            len = fis.read(fileBuffer);
-            if (len == -1) {
-                fis.close();
+        int bytesRead = 0;
+        byte[] inputBuffer = createBuffer(source);
+        while (bytesRead != -1) {
+            bytesRead = source.read(inputBuffer);
+            if (bytesRead == -1) {
                 break;
             } else {
-                crc.update(fileBuffer, off, len);
+                crc.update(inputBuffer, 0, bytesRead);
             }
         }
-        long calculatedChecksum = crc.getValue();
-        return calculatedChecksum;
+        return crc.getValue();
+    }
+    public static long calculateCRC32(File sourceFile) throws IOException {
+        try (InputStream source = new FileInputStream(sourceFile)) {
+            return calculateCRC32(source);
+        }
     }
 
-    public static long calculateCRC32(File file) throws IOException {
-        InputStream fis = new FileInputStream(file);
-        long crc32 = calculateCRC32(fis);
-        fis.close();
-        return crc32;
+    private static byte[] createBuffer(InputStream source) throws IOException {
+        int bufferSize = source.available() > 0 ? source.available() : 512;
+        return new byte[bufferSize];
     }
+
 }

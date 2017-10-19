@@ -2,6 +2,7 @@ package org.clh.jsfv.file;
 
 import java.io.IOException;
 
+import org.clh.jsfv.SfvChecker;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

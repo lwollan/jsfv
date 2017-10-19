@@ -1,4 +1,4 @@
-package org.clh.jsfv.file;
+package org.clh.jsfv.input;
 
 import java.io.File;
 import java.io.FilenameFilter;

@@ -1,6 +1,5 @@
 package org.clh.jsfv;
 
-import org.clh.jsfv.file.SfvChecker;
 import org.clh.jsfv.logging.JPanelEventLogger;
 import org.clh.jsfv.logging.SystemOutEventLogger;
 
