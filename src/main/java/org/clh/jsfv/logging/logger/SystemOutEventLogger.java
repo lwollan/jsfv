@@ -1,4 +1,6 @@
-package org.clh.jsfv.logging;
+package org.clh.jsfv.logging.logger;
+
+import org.clh.jsfv.logging.Event;
 
 import java.io.PrintStream;
 

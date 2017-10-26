@@ -2,8 +2,8 @@ package org.clh.jsfv.file;
 
 import org.clh.jsfv.crc32.Stream;
 import org.clh.jsfv.input.SfvFilenameFilter;
-import org.clh.jsfv.logging.EventLogger;
-import org.clh.jsfv.logging.LogMessage;
+import org.clh.jsfv.logging.Events;
+import org.clh.jsfv.logging.logger.EventLogger;
 import org.clh.jsfv.state.StateFile;
 
 import java.io.BufferedReader;
@@ -39,11 +39,11 @@ public class CheckAllFilesInDirectory {
         procesesEntriesInFilemap();
 
         if (getNumberOfFailedFiles() > 0) {
-            evenHandler.log(LogMessage.errorInFile(sfvFile));
+            evenHandler.log(Events.errorInFile(sfvFile));
         }
 
         if (getNumberOfMissingFiles() > 0) {
-            evenHandler.log(LogMessage.missingFile(sfvFile));
+            evenHandler.log(Events.missingFile(sfvFile));
         }
 
     }

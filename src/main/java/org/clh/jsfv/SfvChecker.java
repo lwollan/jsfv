@@ -3,11 +3,13 @@ package org.clh.jsfv;
 import org.clh.jsfv.file.CheckAllFilesInDirectory;
 import org.clh.jsfv.input.FilesToProcess;
 import org.clh.jsfv.logging.Event;
-import org.clh.jsfv.logging.EventLogger;
-import org.clh.jsfv.logging.LogMessage;
+import org.clh.jsfv.logging.Events;
+import org.clh.jsfv.logging.logger.EventLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SfvChecker {
@@ -34,14 +36,14 @@ public class SfvChecker {
     }
 
     private void processFile(File sfvFile) throws IOException {
-        dispatchEvent(LogMessage.newFile(sfvFile));
-        Long start = System.currentTimeMillis();
+        dispatchEvent(Events.newFile(sfvFile));
+        LocalDateTime startTime = LocalDateTime.now();
 
         CheckAllFilesInDirectory checker = new CheckAllFilesInDirectory(sfvFile.getParentFile());
         checker.process(evenHandler);
 
-        Long processingTime = System.currentTimeMillis() - start;
-        dispatchEvent(LogMessage.completed(sfvFile, processingTime));
+        Duration duration = Duration.between(startTime, LocalDateTime.now());
+        dispatchEvent(Events.completed(sfvFile, duration));
     }
 
     public void setEventHandler(EventLogger eventHandler) {

@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import org.clh.jsfv.logging.SystemOutEventLogger;
+import org.clh.jsfv.logging.logger.SystemOutEventLogger;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

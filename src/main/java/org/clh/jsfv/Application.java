@@ -1,7 +1,7 @@
 package org.clh.jsfv;
 
-import org.clh.jsfv.logging.JPanelEventLogger;
-import org.clh.jsfv.logging.SystemOutEventLogger;
+import org.clh.jsfv.logging.logger.JPanelEventLogger;
+import org.clh.jsfv.logging.logger.SystemOutEventLogger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,20 +12,25 @@ public class Application {
     public static void main(String args[]) throws Exception {
 
         if (args.length == 0 && !GraphicsEnvironment.isHeadless()) {
-            GUI();
+            gui();
         } else {
-            CommandLine(args[0]);
+            commandLine(args);
         }
 
     }
 
-    private static void CommandLine(String arg) throws IOException {
-        SfvChecker checker = new SfvChecker(arg);
-        checker.setEventHandler(new SystemOutEventLogger());
-        checker.process();
+    private static void commandLine(String[] args) throws IOException {
+        if (args != null && args[0] != null) {
+            SfvChecker checker = new SfvChecker(args[0]);
+            checker.setEventHandler(new SystemOutEventLogger());
+            checker.process();
+        } else {
+            System.out.println("Missing directory to check.");
+            System.exit(-1);
+        }
     }
 
-    private static void GUI() throws IOException {
+    private static void gui() throws IOException {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 

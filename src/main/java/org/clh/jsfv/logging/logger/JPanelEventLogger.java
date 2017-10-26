@@ -1,4 +1,6 @@
-package org.clh.jsfv.logging;
+package org.clh.jsfv.logging.logger;
+
+import org.clh.jsfv.logging.Event;
 
 import javax.swing.*;
 
@@ -18,6 +20,7 @@ public class JPanelEventLogger implements EventLogger {
         textField = new JTextField();
         panel.add(textField);
     }
+
     @Override
     public void log(Event event) {
         textField.setText(event.toString());
