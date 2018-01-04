@@ -5,6 +5,8 @@ import java.util.zip.CRC32;
 
 public class Stream {
 
+    public static final int DEFAULT_BUFFER = 512;
+
     private static long calculateCRC32(InputStream source) throws IOException {
         CRC32 crc = new CRC32();
         int bytesRead = 0;
@@ -19,6 +21,7 @@ public class Stream {
         }
         return crc.getValue();
     }
+
     public static long calculateCRC32(File sourceFile) throws IOException {
         try (InputStream source = new FileInputStream(sourceFile)) {
             return calculateCRC32(source);
@@ -26,7 +29,7 @@ public class Stream {
     }
 
     private static byte[] createBuffer(InputStream source) throws IOException {
-        int bufferSize = source.available() > 0 ? source.available() : 512;
+        int bufferSize = source.available() > 0 ? source.available() : DEFAULT_BUFFER;
         return new byte[bufferSize];
     }
 

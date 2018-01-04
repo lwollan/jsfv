@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.clh.jsfv.logging.logger.SystemOutEventLogger;
 import org.junit.Assert;
@@ -70,7 +71,7 @@ public class CheckAllFilesInDirectoryTest {
 
         CheckAllFilesInDirectory checkAllFilesInDirectory = new CheckAllFilesInDirectory(dirMock);
         checkAllFilesInDirectory.process(new SystemOutEventLogger());
-        Assert.assertEquals(0, checkAllFilesInDirectory.getNumberOfMissingFiles());
+        Assert.assertEquals(0, checkAllFilesInDirectory.getNumberOfMissingFiles(new HashMap<>(), dirMock));
     }
 
     @Test
@@ -79,7 +80,7 @@ public class CheckAllFilesInDirectoryTest {
         File directory = new File("src/test/resources/onefilemissing");
         CheckAllFilesInDirectory checkAllFilesInDirectory = new CheckAllFilesInDirectory(directory);
         checkAllFilesInDirectory.process(new SystemOutEventLogger());
-        Assert.assertEquals(1, checkAllFilesInDirectory.getNumberOfMissingFiles());
+        Assert.assertEquals(1, checkAllFilesInDirectory.getNumberOfMissingFiles(new HashMap<>(), directory));
     }
 
     @Test
@@ -88,7 +89,7 @@ public class CheckAllFilesInDirectoryTest {
         File directory = new File("src/test/resources/onecorruptfile");
         CheckAllFilesInDirectory checkAllFilesInDirectory = new CheckAllFilesInDirectory(directory);
         checkAllFilesInDirectory.process(new SystemOutEventLogger());
-        Assert.assertEquals(1, checkAllFilesInDirectory.getNumberOfFailedFiles());
+        Assert.assertEquals(1, checkAllFilesInDirectory.getNumberOfFailedFiles(new HashMap<>(), directory));
     }
 
     @Test

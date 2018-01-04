@@ -72,7 +72,8 @@ public class StateFile {
 
     public void setFinalStatus() throws IOException {
         File headerFile = getHeaderFile();
-        File newHeaderFile = null;
+
+        File newHeaderFile;
         if (failedCount == 0 && missingCount == 0) {
             newHeaderFile = new File(directory, State.OK(checkedCount, totaltCount));
         } else {
