@@ -14,13 +14,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 @Ignore
-public class CheckAllFilesInDirectoryTest {
+public class CheckDirectoryTest {
 
     @Test
     public void testThatSendingFileIsNotAccepted() throws IOException {
         File file = File.createTempFile("prefix", "postfix");
         try {
-            CheckAllFilesInDirectory sfvDirectoryChecker = new CheckAllFilesInDirectory(file);
+            CheckDirectory sfvDirectoryChecker = new CheckDirectory(file);
             Assert.fail("Expected exception.");
         } catch (Exception e) {
         }
@@ -36,7 +36,7 @@ public class CheckAllFilesInDirectoryTest {
                 .thenReturn(sfvFileArrayWithMock);
 
         try {
-            CheckAllFilesInDirectory sfvDirectoryChecker = new CheckAllFilesInDirectory(
+            CheckDirectory sfvDirectoryChecker = new CheckDirectory(
                     dirMock);
         } catch (Exception e) {
             fail();
@@ -52,7 +52,7 @@ public class CheckAllFilesInDirectoryTest {
                 .thenReturn(sfvFileArray);
 
         try {
-            new CheckAllFilesInDirectory(dirMock);
+            new CheckDirectory(dirMock);
             fail();
         } catch (Exception e) {
             Assert.assertNull(e.getMessage());
@@ -69,34 +69,34 @@ public class CheckAllFilesInDirectoryTest {
         Mockito.when(dirMock.listFiles(Mockito.any(FilenameFilter.class)))
                 .thenReturn(sfvFileArrayWithMock);
 
-        CheckAllFilesInDirectory checkAllFilesInDirectory = new CheckAllFilesInDirectory(dirMock);
-        checkAllFilesInDirectory.process(new SystemOutEventLogger());
-        Assert.assertEquals(0, checkAllFilesInDirectory.getNumberOfMissingFiles(new HashMap<>(), dirMock));
+        CheckDirectory checkDirectory = new CheckDirectory(dirMock);
+        checkDirectory.process(new SystemOutEventLogger());
+        Assert.assertEquals(0, checkDirectory.getNumberOfMissingFiles(new HashMap<>(), dirMock));
     }
 
     @Test
     public void testThatNumberOfMissingFilesIsOneWhenOneFileIsMissingFromSFV()
             throws IOException {
         File directory = new File("src/test/resources/onefilemissing");
-        CheckAllFilesInDirectory checkAllFilesInDirectory = new CheckAllFilesInDirectory(directory);
-        checkAllFilesInDirectory.process(new SystemOutEventLogger());
-        Assert.assertEquals(1, checkAllFilesInDirectory.getNumberOfMissingFiles(new HashMap<>(), directory));
+        CheckDirectory checkDirectory = new CheckDirectory(directory);
+        checkDirectory.process(new SystemOutEventLogger());
+        Assert.assertEquals(1, checkDirectory.getNumberOfMissingFiles(new HashMap<>(), directory));
     }
 
     @Test
     public void testThatNumberOfFiledIsOneWhenOneFileIsCorrupt()
             throws IOException {
         File directory = new File("src/test/resources/onecorruptfile");
-        CheckAllFilesInDirectory checkAllFilesInDirectory = new CheckAllFilesInDirectory(directory);
-        checkAllFilesInDirectory.process(new SystemOutEventLogger());
-        Assert.assertEquals(1, checkAllFilesInDirectory.getNumberOfFailedFiles(new HashMap<>(), directory));
+        CheckDirectory checkDirectory = new CheckDirectory(directory);
+        checkDirectory.process(new SystemOutEventLogger());
+        Assert.assertEquals(1, checkDirectory.getNumberOfFailedFiles(new HashMap<>(), directory));
     }
 
     @Test
     public void testThatMissingFilesAreCreated() throws IOException {
         File directory = new File("src/main/resources/nofilesmissing");
-        CheckAllFilesInDirectory checkAllFilesInDirectory = new CheckAllFilesInDirectory(directory);
-        checkAllFilesInDirectory.process(new SystemOutEventLogger());
+        CheckDirectory checkDirectory = new CheckDirectory(directory);
+        checkDirectory.process(new SystemOutEventLogger());
 
     }
 }
