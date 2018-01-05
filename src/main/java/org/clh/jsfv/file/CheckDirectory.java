@@ -1,16 +1,19 @@
 package org.clh.jsfv.file;
 
 import org.clh.jsfv.crc32.Stream;
+import org.clh.jsfv.handler.StateHandler;
 import org.clh.jsfv.logging.Events;
 import org.clh.jsfv.logging.logger.EventLogger;
+import org.clh.jsfv.logging.processing.FileFailedEvent;
+import org.clh.jsfv.logging.processing.FileMissingEvent;
+import org.clh.jsfv.logging.processing.FileProcessedEvent;
+import org.clh.jsfv.logging.processing.ProcessingEvent;
 import org.clh.jsfv.state.StateFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
-import static org.clh.jsfv.file.ProcessingResult.fileMissing;
-import static org.clh.jsfv.file.ProcessingResult.fileProcessedOK;
-import static org.clh.jsfv.file.ProcessingResult.fileProcessedWithError;
 import static org.clh.jsfv.file.SingleSfvFileInDirectory.locateSfvFileAndThrowExceptionIfMoreThanOneFileIsFound;
 
 public class CheckDirectory {
@@ -29,39 +32,41 @@ public class CheckDirectory {
 
     public void process(EventLogger evenHandler) throws IOException {
         Map<String, Long> entries = SfvFile.readSfvFile(sfvFile);
-        procesesEntries(entries, directory);
+        StateFile stateFile = new StateFile(directory, entries.size());
+        StateHandler stateHandler = new StateHandler(stateFile, evenHandler);
+        procesesEntries(stateHandler, entries, directory);
 
+        /**
         if (getNumberOfFailedFiles(entries, directory) > 0) {
             evenHandler.log(Events.errorInFile(sfvFile));
         }
 
         if (getNumberOfMissingFiles(entries, directory) > 0) {
-            evenHandler.log(Events.missingFile(sfvFile));
+            evenHandler.log(Events.missingFile(sfvFile.toString()));
         }
 
+         */
+
+        stateHandler.close();
     }
 
-    private static void procesesEntries(Map<String, Long> map, File directory) throws IOException {
-        StateFile stateFile = new StateFile(directory, map.size());
-
+    private static void procesesEntries(StateHandler stateHandler, Map<String, Long> map, File directory) throws IOException {
         for (String file : map.keySet()) {
-            processFile(stateFile, directory, file, map);
+            ProcessingEvent event = processFile(directory, file, map);
+            stateHandler.handle(event);
         }
-
-        stateFile.setFinalStatus();
     }
 
-    private static void processFile(StateFile headerfile, File directory, String file, Map<String, Long> entries) throws IOException {
+    private static ProcessingEvent processFile(File directory, String file, Map<String, Long> entries) throws IOException {
         if (fileExists(directory, file)) {
             if (isCheckSumOK(directory, file, entries)) {
-                fileProcessedOK(headerfile, directory, file);
+                return new FileProcessedEvent(directory.getCanonicalPath(), file);
             } else {
-                fileProcessedWithError(headerfile, directory, file);
+                return new FileFailedEvent(directory.getCanonicalPath(), file);
             }
         } else {
-            fileMissing(headerfile, directory, file);
+            return new FileMissingEvent(directory.getCanonicalPath(), file);
         }
-        headerfile.update();
     }
 
     private static boolean fileExists(File parentDirectory, String file) {

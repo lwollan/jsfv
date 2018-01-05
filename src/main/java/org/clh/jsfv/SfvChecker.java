@@ -36,7 +36,7 @@ public class SfvChecker {
     }
 
     private void processFile(File sfvFile) throws IOException {
-        dispatchEvent(Events.newFile(sfvFile));
+        dispatchEvent(Events.newFile(sfvFile.getName()));
         LocalDateTime startTime = LocalDateTime.now();
 
         CheckDirectory checker = new CheckDirectory(sfvFile.getParentFile());

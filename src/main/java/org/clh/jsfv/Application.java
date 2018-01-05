@@ -16,7 +16,7 @@ public class Application {
         } else {
             commandLine(args);
         }
-
+        System.exit(0);
     }
 
     private static void commandLine(String[] args) throws IOException {
