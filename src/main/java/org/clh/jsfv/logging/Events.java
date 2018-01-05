@@ -21,8 +21,8 @@ public class Events {
         return new LogMessage(String.format("MISSING FILE in: %s.", filename));
     }
 
-    public static Event processedFile(String filename) {
-        return new LogMessage(String.format("Processed %s", filename));
+    public static Event processedFile(String filename, Duration duration) {
+        return new LogMessage(String.format("Processed %s OK in %s seconds.", filename, duration.getSeconds()));
     }
 
     public static Event completed(File file, Duration processingTime) {

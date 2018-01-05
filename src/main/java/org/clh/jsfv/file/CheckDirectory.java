@@ -2,7 +2,6 @@ package org.clh.jsfv.file;
 
 import org.clh.jsfv.crc32.Stream;
 import org.clh.jsfv.handler.StateHandler;
-import org.clh.jsfv.logging.Events;
 import org.clh.jsfv.logging.logger.EventLogger;
 import org.clh.jsfv.logging.processing.FileFailedEvent;
 import org.clh.jsfv.logging.processing.FileMissingEvent;
@@ -12,6 +11,8 @@ import org.clh.jsfv.state.StateFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.clh.jsfv.file.SingleSfvFileInDirectory.locateSfvFileAndThrowExceptionIfMoreThanOneFileIsFound;
@@ -36,24 +37,14 @@ public class CheckDirectory {
         StateHandler stateHandler = new StateHandler(stateFile, evenHandler);
         procesesEntries(stateHandler, entries, directory);
 
-        /**
-        if (getNumberOfFailedFiles(entries, directory) > 0) {
-            evenHandler.log(Events.errorInFile(sfvFile));
-        }
-
-        if (getNumberOfMissingFiles(entries, directory) > 0) {
-            evenHandler.log(Events.missingFile(sfvFile.toString()));
-        }
-
-         */
-
         stateHandler.close();
     }
 
     private static void procesesEntries(StateHandler stateHandler, Map<String, Long> map, File directory) throws IOException {
         for (String file : map.keySet()) {
+            LocalDateTime start = LocalDateTime.now();
             ProcessingEvent event = processFile(directory, file, map);
-            stateHandler.handle(event);
+            stateHandler.handle(event, Duration.between(start, LocalDateTime.now()));
         }
     }
 

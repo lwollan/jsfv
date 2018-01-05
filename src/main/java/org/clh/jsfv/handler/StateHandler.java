@@ -9,6 +9,7 @@ import org.clh.jsfv.logging.processing.ProcessingEvent;
 import org.clh.jsfv.state.StateFile;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import static org.clh.jsfv.file.FileOperations.createMissingFile;
 import static org.clh.jsfv.file.FileOperations.removeFailedFile;
@@ -24,7 +25,7 @@ public class StateHandler {
         this.eventLogger = eventLogger;
     }
 
-    public void handle(ProcessingEvent event) throws IOException {
+    public void handle(ProcessingEvent event, Duration duration) throws IOException {
         if (event instanceof FileFailedEvent) {
             createMissingFile(event.getDirectory(), event.getFilename());
             eventLogger.log(Events.errorInFile(event.getFilename()));
@@ -36,11 +37,10 @@ public class StateHandler {
         } else if (event instanceof FileProcessedEvent) {
             removeMissingFile(event.getDirectory(), event.getFilename());
             removeFailedFile(event.getDirectory(), event.getDirectory());
-            eventLogger.log(Events.processedFile(event.getFilename()));
+            eventLogger.log(Events.processedFile(event.getFilename(), duration));
             stateFile.incrementCount();
-        } else {
-            //
         }
+
         stateFile.update();
     }
 
